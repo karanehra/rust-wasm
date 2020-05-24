@@ -32,6 +32,7 @@ pub struct Universe {
   cells: Vec<Cell>,
 }
 
+#[wasm_bindgen]
 impl Universe {
   fn get_index(&self, row: u32, column: u32) -> usize {
     (row * self.width + column) as usize
@@ -102,6 +103,18 @@ impl Universe {
 
   pub fn render(&self) -> String {
     self.to_string()
+  }
+
+  pub fn get_width(&self) -> u32 {
+    self.width
+  }
+
+  pub fn get_height(&self) -> u32 {
+    self.height
+  }
+
+  pub fn cells(&self) -> *const Cell {
+    self.cells.as_ptr()
   }
 }
 

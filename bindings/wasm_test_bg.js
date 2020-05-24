@@ -23,6 +23,13 @@ export function greet() {
     wasm.greet();
 }
 
+let cachegetInt32Memory0 = null;
+function getInt32Memory0() {
+    if (cachegetInt32Memory0 === null || cachegetInt32Memory0.buffer !== wasm.memory.buffer) {
+        cachegetInt32Memory0 = new Int32Array(wasm.memory.buffer);
+    }
+    return cachegetInt32Memory0;
+}
 /**
 */
 export const Cell = Object.freeze({ Dead:0,Alive:1, });
@@ -30,11 +37,64 @@ export const Cell = Object.freeze({ Dead:0,Alive:1, });
 */
 export class Universe {
 
+    static __wrap(ptr) {
+        const obj = Object.create(Universe.prototype);
+        obj.ptr = ptr;
+
+        return obj;
+    }
+
     free() {
         const ptr = this.ptr;
         this.ptr = 0;
 
         wasm.__wbg_universe_free(ptr);
+    }
+    /**
+    */
+    tick() {
+        wasm.universe_tick(this.ptr);
+    }
+    /**
+    * @returns {Universe}
+    */
+    static new() {
+        var ret = wasm.universe_new();
+        return Universe.__wrap(ret);
+    }
+    /**
+    * @returns {string}
+    */
+    render() {
+        try {
+            wasm.universe_render(8, this.ptr);
+            var r0 = getInt32Memory0()[8 / 4 + 0];
+            var r1 = getInt32Memory0()[8 / 4 + 1];
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_free(r0, r1);
+        }
+    }
+    /**
+    * @returns {number}
+    */
+    get_width() {
+        var ret = wasm.universe_get_width(this.ptr);
+        return ret >>> 0;
+    }
+    /**
+    * @returns {number}
+    */
+    get_height() {
+        var ret = wasm.universe_get_height(this.ptr);
+        return ret >>> 0;
+    }
+    /**
+    * @returns {number}
+    */
+    cells() {
+        var ret = wasm.universe_cells(this.ptr);
+        return ret;
     }
 }
 

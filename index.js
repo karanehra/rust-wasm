@@ -1,4 +1,13 @@
 import("./bindings/wasm_test").then((module) => {
-  let uni = new module.Universe();
-  console.log(uni);
+  let uni = module.Universe.new();
+  const pre = document.createElement("pre", {});
+  pre.style.lineHeight = "0.9";
+  pre.id = "prepre";
+  document.body.appendChild(pre);
+  renderLoop();
+  const renderLoop = () => {
+    pre.textContent = uni.render();
+    uni.tick();
+    requestAnimationFrame(renderLoop);
+  };
 });
