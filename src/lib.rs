@@ -1,8 +1,7 @@
-mod utils;
-
 use std::fmt;
 use wasm_bindgen::prelude::*;
-
+mod clrs;
+mod utils;
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -129,20 +128,5 @@ impl fmt::Display for Universe {
     }
 
     Ok(())
-  }
-}
-
-#[wasm_bindgen]
-pub struct Colors {
-  width: u32,
-  height: u32,
-}
-
-impl Colors {
-  pub fn get_width(&self) -> u32 {
-    return self.width;
-  }
-  pub fn get_height(&self) -> u32 {
-    return self.height;
   }
 }
