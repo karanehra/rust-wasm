@@ -1,6 +1,7 @@
 use std::fmt;
 use wasm_bindgen::prelude::*;
 mod clrs;
+mod diasquare;
 mod utils;
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
