@@ -1,3 +1,5 @@
+use rand::prelude::*;
+
 struct DiaSquare {
   width: u32,
   height: u32,
@@ -5,16 +7,23 @@ struct DiaSquare {
 }
 
 impl DiaSquare {
-  pub fn new(width: u32, height: u32) -> DiaSquare {
+  pub fn new(&self, size: u32) -> DiaSquare {
     let mut data = Vec::new();
 
-    for _ in 0..width * height {
+    for _ in 0..size * size {
       data.push(0);
     }
 
+    let top_left = randomizer();
+    let top_right = randomizer();
+    let bottom_left = randomizer();
+    let bottom_right = randomizer();
+
+    self.set_cell(0, 0, top_left);
+
     DiaSquare {
-      width,
-      height,
+      width: size,
+      height: size,
       data,
     }
   }
@@ -35,4 +44,9 @@ impl DiaSquare {
   fn recurse(x: u32, y: u32, size: u32) {
     if (size > 1) {}
   }
+}
+
+fn randomizer() -> u32 {
+  let a: u32 = random::<u32>() * 0xFFFFFFFF;
+  return a;
 }
