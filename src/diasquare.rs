@@ -11,16 +11,16 @@ pub struct DiaSquare {
 #[wasm_bindgen]
 impl DiaSquare {
   pub fn new(&mut self, size: u32) -> DiaSquare {
-    let finalSize: u32;
+    let data_size: u32;
     if size % 2 == 0 {
-      finalSize = size + 1;
+      data_size = size + 1;
     } else {
-      finalSize = size;
+      data_size = size;
     }
 
     let mut data = Vec::new();
 
-    for _ in 0..size * size {
+    for _ in 0..data_size * data_size {
       data.push(0);
     }
 
@@ -37,17 +37,14 @@ impl DiaSquare {
     self.set_cell(size, 0, top_right);
     self.set_cell(size, size, bottom_right);
 
-    let center = (top_left + top_right + bottom_left + bottom_right) / 4;
+    let center: u32 = ((top_left + top_right + bottom_left + bottom_right) / 4) as u32;
 
     /*
      * Setting center
      */
-    self.set_cell(size / 2, size / 2, center);
+    self.set_cell(size / 2 as u32, size / 2 as u32, center);
 
-    DiaSquare {
-      size: finalSize,
-      data,
-    }
+    DiaSquare { size, data }
   }
 
   fn get_idx(&self, x: u32, y: u32) -> usize {
@@ -63,8 +60,20 @@ impl DiaSquare {
     self.data[self.get_idx(x, y)]
   }
 
-  fn recurse(x: u32, y: u32, size: u32) {
-    if (size > 1) {}
+  fn recurse(&mut self, x: u32, y: u32, size: u32) {
+    if (size > 1) {
+      /*
+       * Get corner values
+       */
+      let top_left = self.get_cell(x, y);
+      let top_right = self.get_cell(x, y + size);
+      let bottom_left = self.get_cell(x + size, y);
+      let bottom_right = self.get_cell(x + size, y + size);
+
+      let new_center = ((top_left + top_right + bottom_right + bottom_left) / 4) as u32;
+
+      self.set_cell(size / 2 as u32, size / 2 as u32, new_center);
+    }
   }
 }
 
