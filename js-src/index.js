@@ -1,4 +1,4 @@
-import { Colors } from "wasm-test";
+import { Colors, DiaSquare } from "wasm-test";
 import { memory } from "wasm-test/wasm_test_bg";
 
 let a = Colors.new();
@@ -20,3 +20,8 @@ a = "12";
 
 newImageDataBuffer.set(colors);
 ctx.putImageData(newImageData, 0, 0);
+
+let b = DiaSquare.new(4);
+b.init();
+let datum = new Uint32Array(memory.buffer, b.get_data(), 25);
+console.log(datum);
