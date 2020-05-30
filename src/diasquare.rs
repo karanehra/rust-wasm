@@ -43,9 +43,25 @@ impl DiaSquare {
   }
 
   pub fn init(&mut self) {
-    for i in 0..self.size * self.size {
-      self.data[i as usize] = randomizer();
-    }
+    let top_left = randomizer();
+    let top_right = randomizer();
+    let bottom_left = randomizer();
+    let bottom_right = randomizer();
+    let center: u64 = ((top_left + top_right) / 2) as u64;
+    let size = self.size;
+
+    /*
+     * Setting corners
+     */
+    self.set_cell(0, 0, top_left);
+    self.set_cell(0, size, bottom_left);
+    self.set_cell(size, 0, top_right);
+    self.set_cell(size, size, bottom_right);
+
+    // /*
+    //  * Setting center
+    //  */
+    self.set_cell(size / 2, size / 2, 0);
   }
 
   pub fn get_data(&self) -> *const u32 {
@@ -80,36 +96,3 @@ fn randomizer() -> u32 {
   let a: u32 = random::<u32>();
   return a;
 }
-
-// let data_size: u32;
-// if size % 2 == 0 {
-//   data_size = size + 1;
-// } else {
-//   data_size = size;
-// }
-
-//     let mut data = Vec::new();
-
-//     for _ in 0..data_size * data_size {
-//       data.push(0);
-//     }
-
-//     let top_left = randomizer();
-//     let top_right = randomizer();
-//     let bottom_left = randomizer();
-//     let bottom_right = randomizer();
-
-//     /*
-//      * Setting corners
-//      */
-//     self.set_cell(0, 0, top_left);
-//     self.set_cell(0, size, bottom_left);
-//     self.set_cell(size, 0, top_right);
-//     self.set_cell(size, size, bottom_right);
-
-//     let center: u32 = ((top_left + top_right + bottom_left + bottom_right) / 4) as u32;
-
-//     /*
-//      * Setting center
-//      */
-//     self.set_cell(size / 2 as u32, size / 2 as u32, center);

@@ -11,5 +11,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasm-bindgen = "0.2.56"
-rand = "0.7"
+rand = { version = "0.6.5", features = ["wasm-bindgen"] }
 libmath = "0.2.1"
