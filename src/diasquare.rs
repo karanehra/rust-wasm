@@ -34,8 +34,12 @@ impl DiaSquare {
   }
 
   fn set_cell(&mut self, x: u32, y: u32, v: u32) {
+    let mut val: u32 = 0xFF000000;
+    if v > 0xdfffffff {
+      val = 0xFFFFFFFE;
+    }
     let idx = self.get_idx(x, y);
-    self.data[idx] = v;
+    self.data[idx] = val;
   }
 
   fn get_cell(&self, x: u32, y: u32) -> u32 {
@@ -47,7 +51,8 @@ impl DiaSquare {
     let top_right = randomizer();
     let bottom_left = randomizer();
     let bottom_right = randomizer();
-    let center: u32 = ((top_left + top_right + bottom_left + bottom_right) / 4) as u32;
+    let center: u32 =
+      ((top_left + top_right + bottom_left + bottom_right + randomizer()) / 5) as u32;
     let size = self.size;
 
     /*
@@ -95,24 +100,24 @@ impl DiaSquare {
       self.set_cell(
         x,
         y + (size / 2),
-        (top_left + bottom_left + new_center) / 3 + randomizer(),
+        (top_left + bottom_left + new_center + randomizer()) / 4,
       );
       self.set_cell(
         x + (size / 2),
         y,
-        (top_left + top_right + new_center) / 3 + randomizer(),
+        (top_left + top_right + new_center + randomizer()) / 4,
       );
 
       self.set_cell(
         x + (size / 2),
         y + size,
-        (bottom_left + bottom_right + new_center) / 3 + randomizer(),
+        (bottom_left + bottom_right + new_center + randomizer()) / 4,
       );
 
       self.set_cell(
         x + size,
         y + (size / 2),
-        (top_right + bottom_right + new_center) / 3 + randomizer(),
+        (top_right + bottom_right + new_center + randomizer()) / 4,
       );
 
       self.recurse(x, y, size / 2);
@@ -122,6 +127,7 @@ impl DiaSquare {
     }
   }
 }
+
 fn randomizer() -> u32 {
   let a: u32 = random::<u32>() | 0xFF000000;
   return a;
