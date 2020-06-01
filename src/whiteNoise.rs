@@ -23,6 +23,10 @@ impl WhiteNoise {
 }
 
 fn randomizer() -> u32 {
-  let a: u32 = random::<u32>() | 0xFF000000;
-  return a;
+  let mut a: u32 = random::<u32>();
+  let b = a & 0xFF;
+  let g = (a >> 8) & 0xFF;
+  let r = (a >> 16) & 0xFF;
+  a = (b + g + r) / 3 & 0xFF;
+  return ((a << 16) | (a << 8) | a) | 0xFF000000;
 }
