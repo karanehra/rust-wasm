@@ -5,12 +5,6 @@ let DATA_SIZE = 512;
 
 let whiteNoise = WhiteNoise.new(DATA_SIZE);
 
-let datum = new Uint32Array(
-  memory.buffer,
-  whiteNoise.get_pixeldata_ptr(),
-  DATA_SIZE * DATA_SIZE
-);
-
 /**
  * @type {HTMLCanvasElement}
  */
@@ -28,11 +22,33 @@ canvas.style = `
   image-rendering: pixelated;
   -ms-interpolation-mode: nearest-neighbor;
 `;
-let ctx = canvas.getContext("2d");
 
-let newImageData = ctx.createImageData(DATA_SIZE, DATA_SIZE);
-let newImageDataBuffer = new Uint32Array(newImageData.data.buffer);
+const render = () => {
+  let datum = new Uint32Array(
+    memory.buffer,
+    whiteNoise.get_pixeldata_ptr(),
+    DATA_SIZE * DATA_SIZE
+  );
+  let ctx = canvas.getContext("2d");
 
-newImageDataBuffer.set(datum);
-canvas.style.transform = "scale(2)";
-ctx.putImageData(newImageData, 0, 0);
+  let newImageData = ctx.createImageData(DATA_SIZE, DATA_SIZE);
+  let newImageDataBuffer = new Uint32Array(newImageData.data.buffer);
+
+  newImageDataBuffer.set(datum);
+  canvas.style.transform = "scale(2)";
+  ctx.putImageData(newImageData, 0, 0);
+};
+
+const handleKeypress = (event) => {
+  console.log(event, event.key);
+  switch (event.key) {
+    case "ArrowUp":
+      whiteNoise.offset(1, 0);
+      render();
+      break;
+  }
+};
+
+document.addEventListener("keydown", handleKeypress);
+
+render();
