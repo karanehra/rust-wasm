@@ -25,6 +25,7 @@ canvas.style = `
 
 const render = () => {
   whiteNoise.render();
+  whiteNoise.octavize();
   let datum = new Uint32Array(
     memory.buffer,
     whiteNoise.get_pixeldata_ptr(),
