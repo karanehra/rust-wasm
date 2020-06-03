@@ -32,7 +32,7 @@ impl WhiteNoise {
     }
   }
 
-  fn set_cell(&mut self, x: u32, y: u32, v: u32) {
+  fn set_pixel(&mut self, x: u32, y: u32, v: u32) {
     let idx = self.get_idx(x, y);
     self.pixels[idx] = v;
   }
@@ -41,19 +41,18 @@ impl WhiteNoise {
     (x + self.size * y) as usize
   }
 
-  fn get_cell(&self, x: u32, y: u32) -> u32 {
+  fn get_pixel(&self, x: u32, y: u32) -> u32 {
     self.pixels[self.get_idx(x, y)]
   }
 
   pub fn octavize(&mut self) {
     for i in 0..self.size - 1 {
       for j in 0..self.size - 1 {
-        let v1 = self.pixels[self.get_idx(i, j)];
-        let v2 = self.pixels[self.get_idx(i + 1, j)];
-        let v3 = self.pixels[self.get_idx(i, j + 1)];
-        let v4 = self.pixels[self.get_idx(i + 1, j + 1)];
-        let idx = self.get_idx(i, j);
-        self.pixels[idx] = turn_to_bw((v1 + v2 + v3 + v4) / 4 | 0xFF000000);
+        let v1 = self.get_pixel(i, j);
+        let v2 = self.get_pixel(i + 1, j);
+        let v3 = self.get_pixel(i, j + 1);
+        let v4 = self.get_pixel(i + 1, j + 1);
+        self.set_pixel(i, j, turn_to_bw((v1 + v2 + v3 + v4) / 4 | 0xFF000000));
       }
     }
   }

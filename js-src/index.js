@@ -1,7 +1,8 @@
 import { WhiteNoise, DiaSquare } from "wasm-test";
 import { memory } from "wasm-test/wasm_test_bg";
 
-let DATA_SIZE = 512;
+let DATA_SIZE = 32;
+let SCALE_FACTOR = 30;
 
 let whiteNoise = WhiteNoise.new(DATA_SIZE);
 
@@ -21,6 +22,7 @@ canvas.style = `
   image-rendering: crisp-edges;
   image-rendering: pixelated;
   -ms-interpolation-mode: nearest-neighbor;
+  transform: scale(${SCALE_FACTOR})
 `;
 
 const render = () => {
@@ -37,7 +39,6 @@ const render = () => {
   let newImageDataBuffer = new Uint32Array(newImageData.data.buffer);
 
   newImageDataBuffer.set(datum);
-  canvas.style.transform = "scale(2)";
   ctx.putImageData(newImageData, 0, 0);
 };
 
