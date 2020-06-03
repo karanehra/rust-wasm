@@ -24,6 +24,7 @@ canvas.style = `
 `;
 
 const render = () => {
+  whiteNoise.render();
   let datum = new Uint32Array(
     memory.buffer,
     whiteNoise.get_pixeldata_ptr(),
@@ -43,7 +44,19 @@ const handleKeypress = (event) => {
   console.log(event, event.key);
   switch (event.key) {
     case "ArrowUp":
+      whiteNoise.offset(0, 1);
+      render();
+      break;
+    case "ArrowDown":
+      whiteNoise.offset(0, -1);
+      render();
+      break;
+    case "ArrowRight":
       whiteNoise.offset(1, 0);
+      render();
+      break;
+    case "ArrowLeft":
+      whiteNoise.offset(-1, 0);
       render();
       break;
   }
