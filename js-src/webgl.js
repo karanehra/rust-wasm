@@ -13,8 +13,54 @@ const main = () => {
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
-  initializeShaders(gl);
+  const prog = initializeShaders(gl);
+
+  const progInfo = {
+    program: prog,
+    attribLocations: {
+      vertexPosition: gl.getAttribLocation(prog, "aVertexPosition"),
+    },
+    uniformLocations: {
+      projectionMatrix: gl.getUniformLocation(prog, "uProjectionMatrix"),
+      modelViewMatrix: gl.getUniformLocation(prog, "uModelViewMatrix"),
+    },
+  };
+
+  let posBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+  const positions = [0, 0, 20, 0, 20, 20, 0, 20];
+
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+  let finalBuffer = {
+    position: posBuffer,
+  };
+
+  drawScene(gl, progInfo, finalBuffer);
 };
+
+/**
+ *
+ * @param {WebGLRenderingContext} gl
+ * @param {Object} programInfo
+ * @param {Object} buffer
+ */
+function drawScene(gl, programInfo, buffer) {
+  gl.clearColor(0, 0, 0, 1.0);
+  gl.clearDepth(1.0);
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  const fieldOfView = (45 * Math.PI) / 180; // in radians
+  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  const zNear = 0.1;
+  const zFar = 100.0;
+  const projectionMatrix = mat4.create();
+
+  mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+}
 
 const vertexShaderSource = `
   attribute vec4 aVertexPosition;
