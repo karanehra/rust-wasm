@@ -1,29 +1,59 @@
 // import { WhiteNoise, DiaSquare } from "wasm-test";
 // import { memory } from "wasm-test/wasm_test_bg";
 
-// let DATA_SIZE = 32;
-// let SCALE_FACTOR = 30;
+let DATA_SIZE = 32;
+let CELL_SIZE = 20;
+
+/**
+ * @type {HTMLCanvasElement}
+ */
+let canvas = document.getElementById("main");
+canvas.width = DATA_SIZE * CELL_SIZE;
+canvas.height = DATA_SIZE * CELL_SIZE;
+canvas.style = `
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -o-crisp-edges;
+  image-rendering: optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+`;
+
+let data = [];
+
+const render = () => {
+  let ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
+  let totalCells = DATA_SIZE ** 2;
+  for (let i = 0; i < totalCells; i++) {
+    let yCoordinate = Math.floor(i / DATA_SIZE);
+    let xCoordinate = i - yCoordinate * DATA_SIZE;
+    if (Math.random() > 0.5) {
+      data[i] = 1;
+      ctx.beginPath();
+      ctx.rect(
+        xCoordinate * CELL_SIZE,
+        yCoordinate * CELL_SIZE,
+        CELL_SIZE,
+        CELL_SIZE
+      );
+      ctx.fillStyle = "#000000";
+      ctx.fill();
+      ctx.closePath();
+    } else {
+      data[i] = 0;
+    }
+  }
+  console.log(data);
+};
+render();
+
+let btn = document.getElementById("btn");
+btn.addEventListener("click", render);
 
 // let whiteNoise = WhiteNoise.new(DATA_SIZE);
-
-// /**
-//  * @type {HTMLCanvasElement}
-//  */
-
-// let canvas = document.getElementById("main");
-// canvas.width = DATA_SIZE;
-// canvas.height = DATA_SIZE;
-// canvas.style = `
-//   image-rendering: optimizeSpeed;
-//   image-rendering: -moz-crisp-edges;
-//   image-rendering: -webkit-optimize-contrast;
-//   image-rendering: -o-crisp-edges;
-//   image-rendering: optimize-contrast;
-//   image-rendering: crisp-edges;
-//   image-rendering: pixelated;
-//   -ms-interpolation-mode: nearest-neighbor;
-//   transform: scale(${SCALE_FACTOR})
-// `;
 
 // const render = () => {
 //   whiteNoise.render();
@@ -52,7 +82,7 @@
 //     case "ArrowDown":
 //       whiteNoise.offset(0, -1);
 //       render();
-//      s break;
+//       break;
 //     case "ArrowRight":
 //       whiteNoise.offset(1, 0);
 //       render();
@@ -67,31 +97,3 @@
 // document.addEventListener("keydown", handleKeypress);
 
 // render();
-
-import * as Three from "three";
-
-let scene = new Three.Scene();
-let camera = new Three.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-
-let renderer = new Three.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-let geo = new Three.BoxGeometry();
-let material = new Three.MeshBasicMaterial({ color: 0x00ff00 });
-let cube = new Three.Mesh(geo, material);
-scene.add(cube);
-
-camera.position.z = 3;
-function animate() {
-  requestAnimationFrame(animate);
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
-  renderer.render(scene, camera);
-}
-animate();
