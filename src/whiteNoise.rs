@@ -1,9 +1,10 @@
+use rand::prelude::*;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub struct WhiteNoise {
   size: u32,
-  pixels: Vec<u32>,
+  pixels: Vec<u8>,
   offset_x: u32,
   offset_y: u32,
 }
@@ -13,7 +14,7 @@ impl WhiteNoise {
   pub fn new(size: u32) -> WhiteNoise {
     let mut pixels = Vec::new();
     for _ in 0..size * size {
-      pixels.push(0);
+      pixels.push(1);
     }
     WhiteNoise {
       size,
@@ -32,7 +33,7 @@ impl WhiteNoise {
     }
   }
 
-  fn set_pixel(&mut self, x: u32, y: u32, v: u32) {
+  fn set_pixel(&mut self, x: u32, y: u32, v: u8) {
     let idx = self.get_idx(x, y);
     self.pixels[idx] = v;
   }
@@ -41,7 +42,7 @@ impl WhiteNoise {
     (x + self.size * y) as usize
   }
 
-  fn get_pixel(&self, x: u32, y: u32) -> u32 {
+  fn get_pixel(&self, x: u32, y: u32) -> u8 {
     self.pixels[self.get_idx(x, y)]
   }
 
@@ -52,12 +53,12 @@ impl WhiteNoise {
         let v2 = self.get_pixel(i + 1, j);
         let v3 = self.get_pixel(i, j + 1);
         let v4 = self.get_pixel(i + 1, j + 1);
-        self.set_pixel(i, j, turn_to_bw((v1 + v2 + v3 + v4) / 4 | 0xFF000000));
+        self.set_pixel(i, j, (v1 + v2 + v3 + v4) / 4);
       }
     }
   }
 
-  pub fn get_pixeldata_ptr(&self) -> *const u32 {
+  pub fn get_pixeldata_ptr(&self) -> *const u8 {
     self.pixels.as_ptr()
   }
 
@@ -79,14 +80,16 @@ fn turn_to_bw(val: u32) -> u32 {
   return 0xFF000000;
 }
 
-fn randomizer(x: u32, y: u32) -> u32 {
+fn randomizer(x: u32, y: u32) -> u8 {
   let mut a: f64 = x as f64;
   let mut b: f64 = y as f64;
-  // a = a * 223.022f64;
-  // b = b * 1004.123f64;
   // let c: f64 = a + b;
   // let d: f64 = a * b;
-  let random_value = a.sin().abs() * b.cos().abs();
-  return turn_to_bw((random_value * (0xFFFFFFE as f64)) as u32);
+  let random_val: u8 = rand::random();
+  if (random_val > 128) {
+    return 1;
+  }
+  return 0;
+  // return turn_to_bw((random_value * (0xFFFFFFE as f64)) as u32);
   // return (random_value * (0xFFFFFFE as f64)) as u32 | 0xFF000000;
 }

@@ -1,5 +1,6 @@
 // import { WhiteNoise, DiaSquare } from "wasm-test";
-// import { memory } from "wasm-test/wasm_test_bg";
+import { WhiteNoise } from "wasm-test";
+import { memory } from "wasm-test/wasm_test_bg";
 
 let DATA_SIZE = 32;
 let CELL_SIZE = 20;
@@ -29,15 +30,22 @@ const fillData = () => {
     data[i] = Math.random() > 0.5 ? 1 : 0;
   }
 };
+let whiteNoise = WhiteNoise.new(DATA_SIZE);
+whiteNoise.render();
+let datum = new Uint8Array(
+  memory.buffer,
+  whiteNoise.get_pixeldata_ptr(),
+  DATA_SIZE * DATA_SIZE
+);
+console.log(datum);
 
 const render = () => {
   let ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
   let totalCells = DATA_SIZE ** 2;
   for (let i = 0; i < totalCells; i++) {
     let yCoordinate = Math.floor(i / DATA_SIZE);
     let xCoordinate = i - yCoordinate * DATA_SIZE;
-    if (data[i]) {
+    if (datum[i]) {
       ctx.beginPath();
       ctx.fillRect(
         xCoordinate * CELL_SIZE,
@@ -56,23 +64,29 @@ render();
 const move = () => {
   let ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
+  ctx.translate(-1, -1);
+  render();
+};
+const move2 = () => {
+  let ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
   ctx.translate(1, 1);
   render();
 };
 
 let btn = document.getElementById("btn");
 btn.addEventListener("click", move);
-
-// let whiteNoise = WhiteNoise.new(DATA_SIZE);
+let btn2 = document.getElementById("btn2");
+btn2.addEventListener("click", move2);
 
 // const render = () => {
 //   whiteNoise.render();
 //   whiteNoise.octavize();
-//   let datum = new Uint32Array(
-//     memory.buffer,
-//     whiteNoise.get_pixeldata_ptr(),
-//     DATA_SIZE * DATA_SIZE
-//   );
+// let datum = new Uint32Array(
+//   memory.buffer,
+//   whiteNoise.get_pixeldata_ptr(),
+//   DATA_SIZE * DATA_SIZE
+// );
 //   let ctx = canvas.getContext("2d");
 
 //   let newImageData = ctx.createImageData(DATA_SIZE, DATA_SIZE);
