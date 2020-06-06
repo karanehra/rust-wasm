@@ -23,6 +23,13 @@ canvas.style = `
 
 let data = [];
 
+const fillData = () => {
+  let totalCells = DATA_SIZE ** 2;
+  for (let i = 0; i < totalCells; i++) {
+    data[i] = Math.random() > 0.5 ? 1 : 0;
+  }
+};
+
 const render = () => {
   let ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
@@ -30,28 +37,31 @@ const render = () => {
   for (let i = 0; i < totalCells; i++) {
     let yCoordinate = Math.floor(i / DATA_SIZE);
     let xCoordinate = i - yCoordinate * DATA_SIZE;
-    if (Math.random() > 0.5) {
-      data[i] = 1;
+    if (data[i]) {
       ctx.beginPath();
-      ctx.rect(
+      ctx.fillRect(
         xCoordinate * CELL_SIZE,
         yCoordinate * CELL_SIZE,
         CELL_SIZE,
         CELL_SIZE
       );
-      ctx.fillStyle = "#000000";
-      ctx.fill();
       ctx.closePath();
-    } else {
-      data[i] = 0;
     }
   }
   console.log(data);
 };
+fillData();
 render();
 
+const move = () => {
+  let ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
+  ctx.translate(1, 1);
+  render();
+};
+
 let btn = document.getElementById("btn");
-btn.addEventListener("click", render);
+btn.addEventListener("click", move);
 
 // let whiteNoise = WhiteNoise.new(DATA_SIZE);
 
