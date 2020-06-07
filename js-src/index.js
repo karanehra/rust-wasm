@@ -50,8 +50,6 @@ btn.addEventListener("click", move);
 let btn2 = document.getElementById("btn2");
 btn2.addEventListener("click", move2);
 
-const dx = 1;
-const dy = 1;
 let x = 0;
 let y = 0;
 
@@ -78,34 +76,54 @@ const drawMap = () => {
 
 const drawLoop = () => {
   ctx.beginPath();
-  ctx.arc(x, y, BALL_RADIUS, 0, 2 * Math.PI);
   ctx.fillStyle = "red";
-  ctx.fill();
+  ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
   ctx.closePath();
-  let centerX = Math.floor(x / CELL_SIZE);
-  let centerY = Math.floor(y / CELL_SIZE);
+};
 
-  let topX = x;
-  let topY = y - BALL_RADIUS;
-  let rightX = x + BALL_RADIUS;
-  let rightY = y;
-  let bottomX = x;
-  let bottomY = x + BALL_RADIUS;
-  let leftX = x - BALL_RADIUS;
-  let leftY = y;
+const translate = (dx, dy) => {
+  let topX = x + CELL_SIZE / 2;
+  let topY = y;
 
-  console.log(
-    "top:",
-    getLocationData(topX, topY),
-    "right",
-    getLocationData(rightX, rightY),
-    "bottom",
-    getLocationData(bottomX, bottomY),
-    "left",
-    getLocationData(leftX, leftY)
-  );
+  let bottomX = topX;
+  let bottomY = topY + CELL_SIZE;
 
-  // console.log(datum[centerX + centerY * DATA_SIZE]);
+  let leftX = x;
+  let leftY = y + CELL_SIZE / 2;
+
+  let rightX = x + CELL_SIZE;
+  let rightY = y + CELL_SIZE / 2;
+
+  if (Math.abs(dx) > 0) {
+    if (dx > 0) {
+      if (getLocationData(rightX + dx, rightY) === 0) {
+        x += dx;
+      } else {
+        x = x + dx - ((x + dx) % CELL_SIZE);
+      }
+    } else {
+      if (getLocationData(leftX + dx, leftY) === 0) {
+        x += dx;
+      } else {
+        x = x + dx - ((x + dx) % CELL_SIZE);
+      }
+    }
+  }
+  if (Math.abs(dy) > 0) {
+    if (dy > 0) {
+      if (getLocationData(bottomX + dx, bottomY) === 0) {
+        x += dx;
+      } else {
+        x = x + dx - ((x + dx) % CELL_SIZE);
+      }
+    } else {
+      if (getLocationData(topY + dx, topY) === 0) {
+        x += dx;
+      } else {
+        x = x + dx - ((x + dx) % CELL_SIZE);
+      }
+    }
+  }
 };
 
 const getLocationData = (x, y) => {
@@ -122,40 +140,21 @@ const render = () => {
 
 setInterval(render, 10);
 
-// const render = () => {
-//   whiteNoise.render();
-//   whiteNoise.octavize();
-// let datum = new Uint32Array(
-//   memory.buffer,
-//   whiteNoise.get_pixeldata_ptr(),
-//   DATA_SIZE * DATA_SIZE
-// );
-//   let ctx = canvas.getContext("2d");
-
-//   let newImageData = ctx.createImageData(DATA_SIZE, DATA_SIZE);
-//   let newImageDataBuffer = new Uint32Array(newImageData.data.buffer);
-
-//   newImageDataBuffer.set(datum);
-//   ctx.putImageData(newImageData, 0, 0);
-// };
-
 const handleKeypress = (event) => {
   switch (event.key) {
     case "ArrowUp":
-      y -= dy;
+      translate(0, -1);
       break;
     case "ArrowDown":
-      y += dy;
+      translate(0, 1);
       break;
     case "ArrowRight":
-      x += dx;
+      translate(1, 0);
       break;
     case "ArrowLeft":
-      x -= dx;
+      translate(-1, 0);
       break;
   }
 };
 
 document.addEventListener("keydown", handleKeypress);
-
-// render();
