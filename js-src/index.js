@@ -1,6 +1,7 @@
 // import { WhiteNoise, DiaSquare } from "wasm-test";
 import { WhiteNoise } from "wasm-test";
 import { memory } from "wasm-test/wasm_test_bg";
+import Player from "./player";
 
 let DATA_SIZE = 32;
 let CELL_SIZE = 20;
@@ -14,7 +15,7 @@ canvas.width = DATA_SIZE * CELL_SIZE;
 canvas.height = DATA_SIZE * CELL_SIZE;
 canvas.style = `
   image-rendering: optimizeSpeed;
-  image-rendering: -moz-crisp-edges;
+  image-rendering: -moz-crisp-edges; 
   image-rendering: -webkit-optimize-contrast;
   image-rendering: -o-crisp-edges;
   image-rendering: optimize-contrast;
@@ -74,53 +75,62 @@ const drawMap = () => {
   }
 };
 
-const drawLoop = () => {
-  ctx.beginPath();
-  ctx.fillStyle = "red";
-  ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
-  ctx.closePath();
-};
-
 const translate = (dx, dy) => {
-  let topX = x + CELL_SIZE / 2;
-  let topY = y;
+  let topLeftX = x;
+  let topLeftY = y;
 
-  let bottomX = topX;
-  let bottomY = topY + CELL_SIZE;
+  let topRightX = topLeftX + CELL_SIZE;
+  let topRightY = topLeftY;
 
-  let leftX = x;
-  let leftY = y + CELL_SIZE / 2;
+  let bottomLeftX = topLeftX;
+  let bottomLeftY = topLeftY + CELL_SIZE;
 
-  let rightX = x + CELL_SIZE;
-  let rightY = y + CELL_SIZE / 2;
+  let bottomRightX = bottomLeftX + CELL_SIZE;
+  let bottomRightY = bottomLeftY;
 
   if (Math.abs(dx) > 0) {
     if (dx > 0) {
-      if (getLocationData(rightX + dx, rightY) === 0) {
+      if (
+        !getLocationData(topRightX + dx, topRightY) &&
+        !getLocationData(bottomRightX + dx, bottomRightY)
+      ) {
         x += dx;
       } else {
-        x = x + dx - ((x + dx) % CELL_SIZE);
+        x += dx;
+        x = x - (x % CELL_SIZE);
       }
     } else {
-      if (getLocationData(leftX + dx, leftY) === 0) {
+      if (
+        !getLocationData(topLeftX + dx, topLeftY) &&
+        !getLocationData(bottomLeftX + dx, bottomLeftY)
+      ) {
         x += dx;
       } else {
-        x = x + dx - ((x + dx) % CELL_SIZE);
+        x += dx;
+        x = x - (x % CELL_SIZE);
       }
     }
   }
   if (Math.abs(dy) > 0) {
     if (dy > 0) {
-      if (getLocationData(bottomX + dx, bottomY) === 0) {
-        x += dx;
+      if (
+        !getLocationData(bottomLeftX, bottomLeftY + dy) &&
+        !getLocationData(bottomRightX, bottomRightY + dy)
+      ) {
+        y += dy;
       } else {
-        x = x + dx - ((x + dx) % CELL_SIZE);
+        y += dy;
+        y = y + (y % CELL_SIZE);
       }
     } else {
-      if (getLocationData(topY + dx, topY) === 0) {
-        x += dx;
+      if (
+        !getLocationData(topLeftX, topLeftY + dy) &&
+        !getLocationData(topRightX, topRightY + dy)
+      ) {
+        y += dy;
       } else {
-        x = x + dx - ((x + dx) % CELL_SIZE);
+        y += dy;
+        y = y + (y % CELL_SIZE);
       }
     }
   }
@@ -132,10 +142,12 @@ const getLocationData = (x, y) => {
   return datum[normX + normY * DATA_SIZE];
 };
 
+let player = new Player(ctx);
+
 const render = () => {
   ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
   drawMap();
-  drawLoop();
+  player.update();
 };
 
 setInterval(render, 10);
@@ -143,16 +155,16 @@ setInterval(render, 10);
 const handleKeypress = (event) => {
   switch (event.key) {
     case "ArrowUp":
-      translate(0, -1);
+      player.translate(0, -1);
       break;
     case "ArrowDown":
-      translate(0, 1);
+      player.translate(0, 1);
       break;
     case "ArrowRight":
-      translate(1, 0);
+      player.translate(1, 0);
       break;
     case "ArrowLeft":
-      translate(-1, 0);
+      player.translate(-1, 0);
       break;
   }
 };
