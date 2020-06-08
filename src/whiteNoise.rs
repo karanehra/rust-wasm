@@ -53,7 +53,15 @@ impl WhiteNoise {
         let v2 = self.get_pixel(i + 1, j);
         let v3 = self.get_pixel(i, j + 1);
         let v4 = self.get_pixel(i + 1, j + 1);
-        self.set_pixel(i, j, (v1 + v2 + v3 + v4) / 4);
+        let avg: f64 = (v1 + v2 + v3 + v4) as f64 / 4.0;
+        let fin: u8;
+        if (avg <= 0.5) {
+          fin = 0;
+        } else {
+          fin = 1;
+        }
+
+        self.set_pixel(i, j, fin);
       }
     }
   }

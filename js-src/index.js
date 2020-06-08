@@ -3,8 +3,8 @@ import { WhiteNoise } from "wasm-test";
 import { memory } from "wasm-test/wasm_test_bg";
 import Player from "./player";
 
-let DATA_SIZE = 8;
-let CELL_SIZE = 80;
+let DATA_SIZE = 32;
+let CELL_SIZE = 20;
 let MOVE_SPEED = 1;
 
 /**
@@ -27,6 +27,7 @@ let ctx = canvas.getContext("2d");
 
 let whiteNoise = WhiteNoise.new(DATA_SIZE);
 whiteNoise.render();
+whiteNoise.octavize();
 let datum = new Uint8Array(
   memory.buffer,
   whiteNoise.get_pixeldata_ptr(),
@@ -62,15 +63,15 @@ const drawMap = () => {
     let xCoordinate = i - yCoordinate * DATA_SIZE;
     datum[0] = 0;
     if (datum[i]) {
-      ctx.beginPath();
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(
+      let img = new Image(CELL_SIZE, CELL_SIZE);
+      img.src = "./sprites/image_part_003.png";
+      ctx.drawImage(
+        img,
         xCoordinate * CELL_SIZE,
         yCoordinate * CELL_SIZE,
         CELL_SIZE,
         CELL_SIZE
       );
-      ctx.closePath();
     }
   }
 };
@@ -146,8 +147,6 @@ const checkCollisions = () => {
     player.collideLeft = false;
   }
 };
-
-// setInterval(render, 10);
 
 let keyData = {};
 
