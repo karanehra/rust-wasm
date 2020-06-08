@@ -3,9 +3,9 @@ import { WhiteNoise } from "wasm-test";
 import { memory } from "wasm-test/wasm_test_bg";
 import Player from "./player";
 
-let DATA_SIZE = 32;
-let CELL_SIZE = 20;
-let BALL_RADIUS = CELL_SIZE / 2;
+let DATA_SIZE = 8;
+let CELL_SIZE = 80;
+let MOVE_SPEED = 1;
 
 /**
  * @type {HTMLCanvasElement}
@@ -81,13 +81,26 @@ const getLocationData = (x, y) => {
   return datum[normX + normY * DATA_SIZE];
 };
 
-let player = new Player(ctx);
+let player = new Player(ctx, CELL_SIZE / 2);
 
 const render = () => {
   ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
   drawMap();
+  translate();
   player.update();
   checkCollisions();
+  requestAnimationFrame(render);
+};
+
+const translate = () => {
+  let xSpeed = 0;
+  if (keyData["ArrowLeft"] && !player.collideLeft) {
+    xSpeed = -MOVE_SPEED;
+  } else if (keyData["ArrowRight"] && !player.collideRight) {
+    xSpeed = MOVE_SPEED;
+  }
+  player.translate(xSpeed, 0);
+  keyData["ArrowUp"] ? player.jump() : (player.JETPACK_ACTIVE = false);
 };
 
 const checkCollisions = () => {
@@ -134,23 +147,11 @@ const checkCollisions = () => {
   }
 };
 
-setInterval(render, 10);
+// setInterval(render, 10);
 
-const handleKeypress = (event) => {
-  switch (event.key) {
-    case "ArrowUp":
-      if (!player.collideTop) player.translate(0, -1);
-      break;
-    case "ArrowDown":
-      if (!player.collideBottom) player.translate(0, 1);
-      break;
-    case "ArrowRight":
-      if (!player.collideRight) player.translate(1, 0);
-      break;
-    case "ArrowLeft":
-      if (!player.collideLeft) player.translate(-1, 0);
-      break;
-  }
-};
+let keyData = {};
 
-document.addEventListener("keydown", handleKeypress);
+document.addEventListener("keydown", (e) => (keyData[e.key] = true));
+document.addEventListener("keyup", (e) => (keyData[e.key] = false));
+
+render();
