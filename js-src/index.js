@@ -75,67 +75,6 @@ const drawMap = () => {
   }
 };
 
-const translate = (dx, dy) => {
-  let topLeftX = x;
-  let topLeftY = y;
-
-  let topRightX = topLeftX + CELL_SIZE;
-  let topRightY = topLeftY;
-
-  let bottomLeftX = topLeftX;
-  let bottomLeftY = topLeftY + CELL_SIZE;
-
-  let bottomRightX = bottomLeftX + CELL_SIZE;
-  let bottomRightY = bottomLeftY;
-
-  if (Math.abs(dx) > 0) {
-    if (dx > 0) {
-      if (
-        !getLocationData(topRightX + dx, topRightY) &&
-        !getLocationData(bottomRightX + dx, bottomRightY)
-      ) {
-        x += dx;
-      } else {
-        x += dx;
-        x = x - (x % CELL_SIZE);
-      }
-    } else {
-      if (
-        !getLocationData(topLeftX + dx, topLeftY) &&
-        !getLocationData(bottomLeftX + dx, bottomLeftY)
-      ) {
-        x += dx;
-      } else {
-        x += dx;
-        x = x - (x % CELL_SIZE);
-      }
-    }
-  }
-  if (Math.abs(dy) > 0) {
-    if (dy > 0) {
-      if (
-        !getLocationData(bottomLeftX, bottomLeftY + dy) &&
-        !getLocationData(bottomRightX, bottomRightY + dy)
-      ) {
-        y += dy;
-      } else {
-        y += dy;
-        y = y + (y % CELL_SIZE);
-      }
-    } else {
-      if (
-        !getLocationData(topLeftX, topLeftY + dy) &&
-        !getLocationData(topRightX, topRightY + dy)
-      ) {
-        y += dy;
-      } else {
-        y += dy;
-        y = y + (y % CELL_SIZE);
-      }
-    }
-  }
-};
-
 const getLocationData = (x, y) => {
   let normX = Math.floor(x / CELL_SIZE);
   let normY = Math.floor(y / CELL_SIZE);
@@ -148,6 +87,51 @@ const render = () => {
   ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
   drawMap();
   player.update();
+  checkCollisions();
+};
+
+const checkCollisions = () => {
+  if (
+    getLocationData(player.x, player.y - 1) ||
+    getLocationData(player.x + player.PLAYER_SIZE, player.y - 1)
+  ) {
+    player.collideTop = true;
+  } else {
+    player.collideTop = false;
+  }
+
+  if (
+    getLocationData(player.x, player.y + player.PLAYER_SIZE + 1) ||
+    getLocationData(
+      player.x + player.PLAYER_SIZE,
+      player.y + player.PLAYER_SIZE + 1
+    )
+  ) {
+    player.collideBottom = true;
+  } else {
+    player.collideBottom = false;
+  }
+
+  if (
+    getLocationData(player.x + player.PLAYER_SIZE + 1, player.y) ||
+    getLocationData(
+      player.x + player.PLAYER_SIZE + 1,
+      player.y + player.PLAYER_SIZE
+    )
+  ) {
+    player.collideRight = true;
+  } else {
+    player.collideRight = false;
+  }
+
+  if (
+    getLocationData(player.x - 1, player.y) ||
+    getLocationData(player.x - 1, player.y + player.PLAYER_SIZE)
+  ) {
+    player.collideLeft = true;
+  } else {
+    player.collideLeft = false;
+  }
 };
 
 setInterval(render, 10);
@@ -155,16 +139,16 @@ setInterval(render, 10);
 const handleKeypress = (event) => {
   switch (event.key) {
     case "ArrowUp":
-      player.translate(0, -1);
+      if (!player.collideTop) player.translate(0, -1);
       break;
     case "ArrowDown":
-      player.translate(0, 1);
+      if (!player.collideBottom) player.translate(0, 1);
       break;
     case "ArrowRight":
-      player.translate(1, 0);
+      if (!player.collideRight) player.translate(1, 0);
       break;
     case "ArrowLeft":
-      player.translate(-1, 0);
+      if (!player.collideLeft) player.translate(-1, 0);
       break;
   }
 };
