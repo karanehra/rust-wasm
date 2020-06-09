@@ -1,4 +1,3 @@
-// import { WhiteNoise, DiaSquare } from "wasm-test";
 import { WhiteNoise } from "wasm-test";
 import { memory } from "wasm-test/wasm_test_bg";
 import Player from "./player";
@@ -11,8 +10,11 @@ let MOVE_SPEED = 1;
  * @type {HTMLCanvasElement}
  */
 let canvas = document.getElementById("main");
+let map = document.getElementById("map");
 canvas.width = DATA_SIZE * CELL_SIZE;
 canvas.height = DATA_SIZE * CELL_SIZE;
+map.width = DATA_SIZE * CELL_SIZE;
+map.height = DATA_SIZE * CELL_SIZE;
 canvas.style = `
   image-rendering: optimizeSpeed;
   image-rendering: -moz-crisp-edges; 
@@ -24,6 +26,7 @@ canvas.style = `
   -ms-interpolation-mode: nearest-neighbor;
 `;
 let ctx = canvas.getContext("2d");
+let ctx2 = map.getContext("2d");
 
 let whiteNoise = WhiteNoise.new(DATA_SIZE);
 whiteNoise.render();
@@ -34,38 +37,20 @@ let datum = new Uint8Array(
   DATA_SIZE * DATA_SIZE
 );
 
-const move = () => {
-  let ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
-  ctx.translate(-1, -1);
-  render();
-};
-const move2 = () => {
-  let ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
-  ctx.translate(1, 1);
-  render();
-};
-
-let btn = document.getElementById("btn");
-btn.addEventListener("click", move);
-let btn2 = document.getElementById("btn2");
-btn2.addEventListener("click", move2);
-
 let x = 0;
 let y = 0;
 
 const drawMap = () => {
   let totalCells = DATA_SIZE ** 2;
-  ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
+  ctx2.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
   for (let i = 0; i < totalCells; i++) {
     let yCoordinate = Math.floor(i / DATA_SIZE);
     let xCoordinate = i - yCoordinate * DATA_SIZE;
     datum[0] = 0;
     if (datum[i]) {
       let img = new Image(CELL_SIZE, CELL_SIZE);
-      img.src = "./sprites/image_part_003.png";
-      ctx.drawImage(
+      img.src = getLocationSpritePath(xCoordinate, yCoordinate);
+      ctx2.drawImage(
         img,
         xCoordinate * CELL_SIZE,
         yCoordinate * CELL_SIZE,
@@ -73,6 +58,25 @@ const drawMap = () => {
         CELL_SIZE
       );
     }
+  }
+};
+
+const getLocationSpritePath = (x, y) => {
+  let left = getLocationData(x - 1, y);
+  let right = getLocationData(x + 1, y);
+  let top = getLocationData(x, y - 1);
+  let bottom = getLocationData(x, y + 1);
+  let topLeft = getLocationData(x - 1, y - 1);
+  let topRight = getLocationData(x + 1, y - 1);
+  let bottomLeft = getLocationData(x - 1, y + 1);
+  let bottomRight = getLocationData(x + 1, y + 1);
+  if (x == 1 && y == 1) console.log(top, bottom);
+  if (top) {
+    return "./sprites/image_part_001.png";
+  } else if (bottom && !top) {
+    return "./sprites/image_part_005.png";
+  } else {
+    return "./sprites/image_part_003.png";
   }
 };
 
@@ -101,6 +105,7 @@ const translate = () => {
     xSpeed = MOVE_SPEED;
   }
   player.translate(xSpeed, 0);
+  // ctx.translate(-xSpeed, 0);
   keyData["ArrowUp"] ? player.jump() : (player.JETPACK_ACTIVE = false);
 };
 
