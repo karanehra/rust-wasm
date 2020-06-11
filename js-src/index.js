@@ -104,15 +104,10 @@ const render = () => {
   drawMap();
   translate();
   player.update();
-  let data = whiteNoise.check_collisions(
-    Math.floor(player.x / CELL_SIZE),
-    Math.floor(player.y / CELL_SIZE)
-  );
+  let data = whiteNoise.check_collisions(player.x, player.y);
   console.log(data);
-  player.collideRight = data[0];
+  player.collideTop = data[0];
   player.collideBottom = data[1];
-  player.collideLeft = data[2];
-  player.collideTop = data[3];
   // checkCollisions();
   requestAnimationFrame(render);
 };
