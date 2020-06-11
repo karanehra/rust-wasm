@@ -62,22 +62,33 @@ const drawMap = () => {
 };
 
 const getLocationSpritePath = (x, y) => {
-  let left = getLocationData(x - 1, y);
-  let right = getLocationData(x + 1, y);
-  let top = getLocationData(x, y - 1);
-  let bottom = getLocationData(x, y + 1);
-  let topLeft = getLocationData(x - 1, y - 1);
-  let topRight = getLocationData(x + 1, y - 1);
-  let bottomLeft = getLocationData(x - 1, y + 1);
-  let bottomRight = getLocationData(x + 1, y + 1);
-  if (x == 1 && y == 1) console.log(top, bottom);
+  let left = getLocationDataFromIndices(x - 1, y);
+  let right = getLocationDataFromIndices(x + 1, y);
+  let top = getLocationDataFromIndices(x, y - 1);
+  let bottom = getLocationDataFromIndices(x, y + 1);
+  let topLeft = getLocationDataFromIndices(x - 1, y - 1);
+  let topRight = getLocationDataFromIndices(x + 1, y - 1);
+  let bottomLeft = getLocationDataFromIndices(x - 1, y + 1);
+  let bottomRight = getLocationDataFromIndices(x + 1, y + 1);
   if (top) {
     return "./sprites/image_part_001.png";
   } else if (bottom && !top) {
     return "./sprites/image_part_005.png";
-  } else {
-    return "./sprites/image_part_003.png";
+  } else if (!bottom && !top) {
+    if (!right && !left) {
+      return "./sprites/image_part_009.png";
+    } else if (!right && left) {
+      return "./sprites/image_part_008.png";
+    } else if (right && !left) {
+      return "./sprites/image_part_006.png";
+    } else {
+      return "./sprites/image_part_007.png";
+    }
   }
+};
+
+const getLocationDataFromIndices = (x, y) => {
+  return datum[x + y * DATA_SIZE];
 };
 
 const getLocationData = (x, y) => {
