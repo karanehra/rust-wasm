@@ -43,6 +43,12 @@ impl WhiteNoise {
   }
 
   fn get_pixel(&self, x: u32, y: u32) -> u8 {
+    if x < 0 {
+      return 0;
+    }
+    if y < 0 {
+      return 0;
+    }
     self.pixels[self.get_idx(x, y)]
   }
 
@@ -73,6 +79,15 @@ impl WhiteNoise {
   pub fn offset(&mut self, x: u32, y: u32) {
     self.offset_x = self.offset_x + x;
     self.offset_y = self.offset_y + y;
+  }
+
+  pub fn check_collisions(&self, x: u32, y: u32) -> Vec<u8> {
+    let mut a = Vec::new();
+    a.push(self.get_pixel(x + 1, y));
+    a.push(self.get_pixel(x, y + 1));
+    a.push(self.get_pixel(x - 1, y));
+    a.push(self.get_pixel(x, y - 1));
+    return a;
   }
 }
 

@@ -104,6 +104,12 @@ const render = () => {
   drawMap();
   translate();
   player.update();
+  console.log(
+    whiteNoise.check_collisions(
+      Math.floor(player.x / CELL_SIZE),
+      Math.floor(player.y / CELL_SIZE)
+    )
+  );
   checkCollisions();
   requestAnimationFrame(render);
 };
