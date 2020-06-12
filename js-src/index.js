@@ -1,6 +1,11 @@
-import { WhiteNoise } from "wasm-test";
+import { WhiteNoise, Map } from "wasm-test";
 import { memory } from "wasm-test/wasm_test_bg";
 import Player from "./player";
+
+let gameMap = Map.create(32, 10, 20);
+console.log(gameMap);
+
+// OLD implementation below.
 
 let DATA_SIZE = 32;
 let CELL_SIZE = 20;
@@ -105,7 +110,6 @@ const render = () => {
   translate();
   player.update();
   let data = whiteNoise.check_collisions(player.x, player.y);
-  console.log(data);
   player.collideTop = data[0];
   player.collideBottom = data[1];
   // checkCollisions();
