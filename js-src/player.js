@@ -9,7 +9,7 @@ export default class Player {
     this.x = 0;
     this.y = 0;
     this.PLAYER_SIZE = size;
-    this.GRAVITY = 1;
+    this.GRAVITY = 0;
     this.JETPACK = -1;
     this.JETPACK_ACTIVE = false;
     this.collideRight = false;
