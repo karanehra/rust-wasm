@@ -2,7 +2,7 @@ use std::fmt;
 use wasm_bindgen::prelude::*;
 mod clrs;
 mod diasquare;
-mod utils;
+mod map;
 mod white_noise;
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
