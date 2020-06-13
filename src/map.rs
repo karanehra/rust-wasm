@@ -9,6 +9,7 @@ pub struct Map {
   player_x: f32,
   player_y: f32,
   gravity: f32,
+  is_facing_right: bool,
 }
 
 #[wasm_bindgen]
@@ -27,6 +28,7 @@ impl Map {
       player_x: 5.0,
       player_y: 5.0,
       gravity: 0.0,
+      is_facing_right: false,
     }
   }
 
@@ -80,8 +82,32 @@ impl Map {
   }
 
   pub fn update_player(&mut self) {
-    if !self.is_bottom_colliding() {
+    if self.gravity > 0.0 && !self.is_bottom_colliding() {
       self.player_y += self.gravity;
+    }
+    if self.gravity < 0.0 && !self.is_top_colliding() {
+      self.player_y += self.gravity;
+    }
+  }
+
+  pub fn set_facing_right(&mut self, is_facing_right: bool) {
+    self.is_facing_right = is_facing_right;
+  }
+
+  pub fn remove_block(&mut self) {
+    if self.is_facing_right && self.is_right_colliding() {
+      let x = (self.player_x / self.cell_size as f32) as u32;
+      let y = (self.player_y / self.cell_size as f32) as u32;
+      let idx = self.get_idx(x, y);
+      self.data[idx + 1] = 0;
+    }
+
+    if !self.is_facing_right && self.is_left_colliding() {
+      let x = (self.player_x / self.cell_size as f32) as u32;
+      let y = (self.player_y / self.cell_size as f32) as u32;
+      self.set_data(x, y, 0);
+      let idx = self.get_idx(x, y);
+      self.data[idx - 1] = 0;
     }
   }
 
@@ -177,6 +203,11 @@ impl Map {
     let x = x / self.cell_size;
     let y = y / self.cell_size;
     self.data[self.get_idx(x, y)]
+  }
+
+  fn set_data(&mut self, x: u32, y: u32, v: u8) {
+    let idx = self.get_idx(x, y);
+    self.data[idx] = v;
   }
 }
 
