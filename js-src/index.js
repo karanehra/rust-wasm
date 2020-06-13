@@ -52,6 +52,13 @@ const render = () => {
   ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
   player.x = gameMap.get_player_x();
   player.y = gameMap.get_player_y();
+  gameMap.translate_player(0.2, 0.2);
+  let collData = gameMap.check_player_collisions();
+  console.log(collData[0]);
+  player.collideTop = collData[0];
+  player.collideBottom = collData[1];
+  player.collideLeft = collData[2];
+  player.collideRight = collData[3];
   player.update();
   requestAnimationFrame(render);
 };

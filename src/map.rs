@@ -41,22 +41,28 @@ impl Map {
     self.data.as_ptr()
   }
 
-  pub fn check_collisions(&self, x: u32, y: u32) -> Vec<u8> {
-    let x = x / self.cell_size;
-    let y = y / self.cell_size;
-    let mut collision_data = Vec::new();
-    collision_data.push(self.is_top_colliding(x, y) as u8);
-    collision_data.push(self.is_bottom_colliding(x, y) as u8);
-    collision_data.push(self.is_left_colliding(x, y) as u8);
-    return collision_data;
-  }
-
   pub fn get_player_x(&self) -> f32 {
     self.player_x
   }
 
   pub fn get_player_y(&self) -> f32 {
     self.player_y
+  }
+
+  pub fn translate_player(&mut self, dx: f32, dy: f32) {
+    self.player_x += dx;
+    self.player_y += dy;
+  }
+
+  pub fn check_player_collisions(&self) -> Vec<u8> {
+    let x: u32 = (self.player_x / self.cell_size as f32) as u32;
+    let y: u32 = (self.player_y / self.cell_size as f32) as u32;
+    let mut collision_data = Vec::new();
+    collision_data.push(self.is_top_colliding(x, y) as u8);
+    collision_data.push(self.is_bottom_colliding(x, y) as u8);
+    collision_data.push(self.is_left_colliding(x, y) as u8);
+    collision_data.push(self.is_right_colliding(x, y) as u8);
+    return collision_data;
   }
 
   fn is_top_colliding(&self, x: u32, y: u32) -> bool {
@@ -116,6 +122,27 @@ impl Map {
 
     if self.get_data_at_position(bottom_left_x, bottom_left_y) == 0
       && self.get_data_at_position(top_left_x, top_left_y) == 0
+    {
+      return false;
+    }
+    return true;
+  }
+
+  fn is_right_colliding(&self, x: u32, y: u32) -> bool {
+    let mut top_right_x = x + self.player_size;
+    let top_right_y = y;
+
+    if top_right_x == self.size {
+      return false;
+    }
+
+    top_right_x += 1;
+
+    let bottom_right_x = top_right_x;
+    let bottom_right_y = y + self.player_size;
+
+    if self.get_data_at_position(bottom_right_x, bottom_right_y) == 0
+      && self.get_data_at_position(top_right_x, top_right_y) == 0
     {
       return false;
     }
