@@ -45,7 +45,7 @@ const setupMap = () => {
         );
       }
     }
-    setTimeout(() => (isMapBeingSetup = false), 1000);
+    setTimeout(() => (isMapBeingSetup = false), 300);
   };
 };
 
@@ -67,6 +67,7 @@ const render = () => {
 let keyData = {};
 
 const handleControls = () => {
+  console.log(keyData);
   if (keyData.ArrowRight) {
     gameMap.translate_player(0.9, 0);
     gameMap.set_facing_right(true);
@@ -82,6 +83,12 @@ const handleControls = () => {
   if (keyData[" "]) {
     if (!isMapBeingSetup) {
       gameMap.remove_block();
+      setupMap();
+    }
+  }
+  if (keyData.Shift) {
+    if (!isMapBeingSetup) {
+      gameMap.add_block();
       setupMap();
     }
   }

@@ -111,6 +111,22 @@ impl Map {
     }
   }
 
+  pub fn add_block(&mut self) {
+    if self.is_facing_right && !self.is_right_colliding() {
+      let x = (self.player_x / self.cell_size as f32) as u32;
+      let y = (self.player_y / self.cell_size as f32) as u32;
+      let idx = self.get_idx(x, y);
+      self.data[idx + 1] = 1;
+    }
+
+    if !self.is_facing_right && !self.is_left_colliding() {
+      let x = (self.player_x / self.cell_size as f32) as u32;
+      let y = (self.player_y / self.cell_size as f32) as u32;
+      let idx = self.get_idx(x, y);
+      self.data[idx - 1] = 1;
+    }
+  }
+
   fn is_top_colliding(&self) -> bool {
     let top_left_x = self.player_x as u32;
     let mut top_left_y = self.player_y as u32;
