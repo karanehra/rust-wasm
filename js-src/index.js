@@ -48,11 +48,14 @@ img.onload = () => {
 
 let player = new Player(ctx, 10);
 
+gameMap.set_gravity(1);
+
 const render = () => {
   ctx.clearRect(0, 0, DATA_SIZE * CELL_SIZE, DATA_SIZE * CELL_SIZE);
   player.x = gameMap.get_player_x();
   player.y = gameMap.get_player_y();
-  gameMap.translate_player(0.2, 0);
+  // gameMap.translate_player(0.2, 0.2);
+  gameMap.update_player();
   player.update();
   requestAnimationFrame(render);
 };

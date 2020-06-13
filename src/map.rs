@@ -8,6 +8,7 @@ pub struct Map {
   cell_size: u32,
   player_x: f32,
   player_y: f32,
+  gravity: f32,
 }
 
 #[wasm_bindgen]
@@ -25,6 +26,7 @@ impl Map {
       cell_size,
       player_x: 5.0,
       player_y: 5.0,
+      gravity: 0.0,
     }
   }
 
@@ -71,6 +73,16 @@ impl Map {
     collision_data.push(self.is_left_colliding() as u8);
     collision_data.push(self.is_right_colliding() as u8);
     return collision_data;
+  }
+
+  pub fn set_gravity(&mut self, gravity: f32) {
+    self.gravity = gravity;
+  }
+
+  pub fn update_player(&mut self) {
+    if !self.is_bottom_colliding() {
+      self.player_y += self.gravity;
+    }
   }
 
   fn is_top_colliding(&self) -> bool {
@@ -152,7 +164,7 @@ impl Map {
     if self.get_data_at_position(bottom_right_x, bottom_right_y) == 0
       && self.get_data_at_position(top_right_x, top_right_y) == 0
     {
-      return true;
+      return false;
     }
     return true;
   }
