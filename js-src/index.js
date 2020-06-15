@@ -15,6 +15,9 @@ let gameMap = Map.create(DATA_SIZE, PLAYER_SIZE, CELL_SIZE);
 gameMap.populate();
 
 let canvas = document.getElementById("main");
+/**
+ * @type {HTMLCanvasElement}
+ */
 let gameCanvas = document.getElementById("map");
 
 canvas.width = DATA_SIZE * CELL_SIZE;
@@ -66,6 +69,7 @@ const render = () => {
   handleControls();
   player.x = gameMap.get_player_x();
   player.y = gameMap.get_player_y();
+  // mapCtx.translate(player.x - 5, player.y - 5);
   gameMap.update_player();
   player.update();
   requestAnimationFrame(render);
