@@ -21,7 +21,7 @@ const setupWebGL = () => {
       vec2 normalized = a_position/u_resolution;
 
       vec2 clip_space = (normalized * 2.0) - 1.0;
-      gl_Position = vec4(clip_space,0,1);
+      gl_Position = vec4(clip_space*vec2(1,-1),0,1);
     }
   `;
 
@@ -60,8 +60,6 @@ const setupWebGL = () => {
   );
   let positionsBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionsBuffer);
-  var positions = [0, 0, 10, 10, 10, 0];
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
   gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT);
@@ -75,8 +73,25 @@ const setupWebGL = () => {
   gl.vertexAttribPointer(positionAttributeLocation, size, type, false, 0, 0);
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
+  drawRectangle(gl, 0, 0, 10, 10);
+};
 
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
+/**
+ *
+ * @param {WebGLRenderingContext} gl The context
+ * @param {Number} x The top-left vertex x
+ * @param {Number} y The top-left vertex y
+ * @param {Number} w Width of rect
+ * @param {Number} h Height of rect
+ */
+const drawRectangle = (gl, x, y, w, h) => {
+  let x1 = x;
+  let y1 = y;
+  let x2 = x + w;
+  let y2 = x + h;
+  let points = [x1, y1, x1, y2, x2, y2, x2, y2, x2, y1, x1, y1];
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
 
 window.onload = setupWebGL;
