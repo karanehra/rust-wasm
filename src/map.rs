@@ -229,7 +229,7 @@ impl Map {
 
 fn randomizer() -> u8 {
   let random_val: u8 = rand::random();
-  if random_val > 75 {
+  if random_val > 128 {
     return 1;
   }
   return 0;

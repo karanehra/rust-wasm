@@ -48,7 +48,7 @@ export const setupWebGL = () => {
 
   const fsSource = `
   void main() {
-    gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+    gl_FragColor = vec4(0.0,0.0,0.0, 1.0);
   }
 `;
 
@@ -82,7 +82,7 @@ export const setupWebGL = () => {
   let positionsBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionsBuffer);
 
-  gl.clearColor(0, 0, 0, 1);
+  gl.clearColor(1, 1, 1, 1);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   gl.useProgram(program);
