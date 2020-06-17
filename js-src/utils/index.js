@@ -110,8 +110,8 @@ export const drawRectangle = (gl, x, y, w, h) => {
   let x1 = x;
   let y1 = y;
   let x2 = x + w;
-  let y2 = x + h;
-  let points = [x1, y1, x1, y2, x2, y2, x2, y2, x2, y1, x1, y1];
+  let y2 = y + h;
+  let points = [x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2];
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
