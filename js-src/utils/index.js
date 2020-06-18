@@ -95,7 +95,8 @@ export const setupWebGL = () => {
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
-  return gl;
+  globalGLObject.gl = gl;
+  return globalGLObject;
 };
 
 /**
@@ -114,4 +115,21 @@ export const drawRectangle = (gl, x, y, w, h) => {
   let points = [x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2];
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
+};
+
+export const globalGLObject = {
+  gl: null,
+  drawSquare: function (x, y, s) {
+    let x1 = x;
+    let y1 = y;
+    let x2 = x + s;
+    let y2 = y + s;
+    let points = [x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2];
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(points),
+      this.gl.STATIC_DRAW
+    );
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+  },
 };

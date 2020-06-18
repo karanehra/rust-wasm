@@ -9,7 +9,7 @@ const GRAVITY = 1;
 const MOVE_SPEED = 0.9;
 const FLY_SPEED = -1.2;
 
-const initializedContext = setupWebGL();
+const glObject = setupWebGL();
 
 /////////// Render map ///////////
 let map = document.getElementById("map");
@@ -25,11 +25,9 @@ const setupMap = () => {
     let xCoordinate = i - yCoordinate * size;
     data[0] = 0;
     if (data[i]) {
-      drawRectangle(
-        initializedContext,
+      glObject.drawSquare(
         xCoordinate * CELL_SIZE,
         yCoordinate * CELL_SIZE,
-        CELL_SIZE,
         CELL_SIZE
       );
     }
@@ -62,7 +60,6 @@ const render = () => {
   handleControls();
   player.x = gameMap.get_player_x();
   player.y = gameMap.get_player_y();
-  // mapCtx.translate(player.x - 5, player.y - 5);
   gameMap.update_player();
   player.update();
   requestAnimationFrame(render);
