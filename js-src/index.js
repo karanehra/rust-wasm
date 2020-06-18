@@ -62,6 +62,7 @@ const render = () => {
   player.y = gameMap.get_player_y();
   gameMap.update_player();
   player.update();
+  setupMap();
   requestAnimationFrame(render);
 };
 let keyData = {};
@@ -82,18 +83,29 @@ const handleControls = () => {
   if (keyData[" "]) {
     if (!isMapBeingSetup) {
       gameMap.remove_block();
-      setupMap();
     }
   }
   if (keyData.Shift) {
     if (!isMapBeingSetup) {
       gameMap.add_block();
-      setupMap();
     }
   }
 };
 
 render();
-
+const handleMapMouseClick = (event) => {
+  console.log(
+    Math.floor(event.clientX / CELL_SIZE),
+    Math.floor(event.clientY / CELL_SIZE)
+  );
+};
+const handleMapMouseHover = (event) => {
+  console.log(
+    Math.floor(event.clientX / CELL_SIZE),
+    Math.floor(event.clientY / CELL_SIZE)
+  );
+};
+main.addEventListener("click", handleMapMouseClick);
+main.addEventListener("mousemove", handleMapMouseHover);
 document.addEventListener("keydown", (e) => (keyData[e.key] = true));
 document.addEventListener("keyup", (e) => (keyData[e.key] = false));
