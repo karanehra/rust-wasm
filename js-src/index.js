@@ -17,19 +17,23 @@ let size = Math.floor(Math.max(map.width, map.height) / 20);
 
 let gameMap = Map.create(size, 10, CELL_SIZE);
 gameMap.populate();
+
+let mouseX, mouseY;
+
 let data = new Uint8Array(memory.buffer, gameMap.render(), size * size);
 data[0] = 0;
 const setupMap = () => {
   for (let i = 0; i < size ** 2; i++) {
     let yCoordinate = Math.floor(i / size);
     let xCoordinate = i - yCoordinate * size;
-    data[0] = 0;
     if (data[i]) {
-      glObject.drawSquare(
-        xCoordinate * CELL_SIZE,
-        yCoordinate * CELL_SIZE,
-        CELL_SIZE
-      );
+      if (xCoordinate != mouseX || yCoordinate != mouseY) {
+        glObject.drawSquare(
+          xCoordinate * CELL_SIZE,
+          yCoordinate * CELL_SIZE,
+          CELL_SIZE
+        );
+      }
     }
   }
   setTimeout(() => (isMapBeingSetup = false), 300);
@@ -58,8 +62,12 @@ gameMap.set_gravity(GRAVITY);
 const render = () => {
   ctx.clearRect(0, 0, main.width, main.height);
   handleControls();
-  player.x = gameMap.get_player_x();
-  player.y = gameMap.get_player_y();
+  // player.x = gameMap.get_player_x();
+  // player.y = gameMap.get_player_y();
+  glObject.translation = [
+    -gameMap.get_player_x() + 5,
+    -gameMap.get_player_y() + 5,
+  ];
   gameMap.update_player();
   player.update();
   setupMap();
@@ -100,10 +108,8 @@ const handleMapMouseClick = (event) => {
   );
 };
 const handleMapMouseHover = (event) => {
-  console.log(
-    Math.floor(event.clientX / CELL_SIZE),
-    Math.floor(event.clientY / CELL_SIZE)
-  );
+  mouseX = Math.floor(event.clientX / CELL_SIZE);
+  mouseY = Math.floor(event.clientY / CELL_SIZE);
 };
 main.addEventListener("click", handleMapMouseClick);
 main.addEventListener("mousemove", handleMapMouseHover);

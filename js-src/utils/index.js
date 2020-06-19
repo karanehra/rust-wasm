@@ -37,18 +37,22 @@ export const setupWebGL = () => {
     attribute vec2 a_position;
 
     uniform vec2 u_resolution;
+    uniform vec2 u_translation;
 
     void main() {
-      vec2 normalized = a_position/u_resolution;
+      vec2 position = a_position + u_translation;
+      vec2 normalized = position / u_resolution;
 
       vec2 clip_space = (normalized * 2.0) - 1.0;
-      gl_Position = vec4(clip_space*vec2(1,-1),0,1);
+      gl_Position = vec4(clip_space * vec2(1, -1), 0, 1);
     }
   `;
 
   const fsSource = `
+  precision mediump float;
+  uniform vec4 u_color;
   void main() {
-    gl_FragColor = vec4(0.0,0.0,0.0, 1.0);
+    gl_FragColor = u_color;
   }
 `;
 
@@ -96,6 +100,11 @@ export const setupWebGL = () => {
   gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
   globalGLObject.gl = gl;
+  globalGLObject.translationLocation = gl.getUniformLocation(
+    program,
+    "u_translation"
+  );
+  globalGLObject.colorLocation = gl.getUniformLocation(program, "u_color");
   return globalGLObject;
 };
 
@@ -118,8 +127,11 @@ export const drawRectangle = (gl, x, y, w, h) => {
 };
 
 export const globalGLObject = {
+  /** @type {WebGLRenderingContext} */
   gl: null,
   drawSquare: function (x, y, s) {
+    this.gl.uniform2fv(this.translationLocation, this.translation);
+    this.gl.uniform4fv(this.colorLocation, this.color);
     let x1 = x;
     let y1 = y;
     let x2 = x + s;
@@ -132,4 +144,8 @@ export const globalGLObject = {
     );
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   },
+  translationLocation: null,
+  translation: [0, 0],
+  colorLocation: null,
+  color: [0, 0, 0, 1],
 };
