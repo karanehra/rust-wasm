@@ -25,8 +25,8 @@ impl Map {
       data,
       player_size,
       cell_size,
-      player_x: 5.0,
-      player_y: 5.0,
+      player_x: cell_size as f32 * 10.0,
+      player_y: cell_size as f32 * 10.0,
       gravity: 0.0,
       is_facing_right: false,
     }

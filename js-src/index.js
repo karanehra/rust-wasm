@@ -14,8 +14,9 @@ const glObject = setupWebGL();
 /////////// Render map ///////////
 let map = document.getElementById("map");
 let size = Math.floor(Math.max(map.width, map.height) / 20);
-
 let gameMap = Map.create(size, 10, CELL_SIZE);
+let startX = gameMap.get_player_x();
+let startY = gameMap.get_player_y();
 gameMap.populate();
 
 let mouseX, mouseY;
@@ -36,7 +37,6 @@ const setupMap = () => {
       }
     }
   }
-  setTimeout(() => (isMapBeingSetup = false), 300);
 };
 
 setupMap();
@@ -48,7 +48,8 @@ setupMap();
 let main = document.getElementById("main");
 let ctx = main.getContext("2d");
 let player = new Player(ctx, PLAYER_SIZE);
-let isMapBeingSetup = false;
+player.x = startX;
+player.y = startY;
 
 const width = main.clientWidth;
 const height = main.clientHeight;
@@ -62,17 +63,16 @@ gameMap.set_gravity(GRAVITY);
 const render = () => {
   ctx.clearRect(0, 0, main.width, main.height);
   handleControls();
-  // player.x = gameMap.get_player_x();
-  // player.y = gameMap.get_player_y();
   glObject.translation = [
-    -gameMap.get_player_x() + 5,
-    -gameMap.get_player_y() + 5,
+    -gameMap.get_player_x() + startX,
+    -gameMap.get_player_y() + startY,
   ];
   gameMap.update_player();
   player.update();
   setupMap();
   requestAnimationFrame(render);
 };
+
 let keyData = {};
 
 const handleControls = () => {
@@ -89,18 +89,15 @@ const handleControls = () => {
     gameMap.set_gravity(GRAVITY);
   }
   if (keyData[" "]) {
-    if (!isMapBeingSetup) {
-      gameMap.remove_block();
-    }
+    gameMap.remove_block();
   }
   if (keyData.Shift) {
-    if (!isMapBeingSetup) {
-      gameMap.add_block();
-    }
+    gameMap.add_block();
   }
 };
 
 render();
+
 const handleMapMouseClick = (event) => {
   console.log(
     Math.floor(event.clientX / CELL_SIZE),
