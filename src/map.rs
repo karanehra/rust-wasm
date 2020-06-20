@@ -12,6 +12,8 @@ pub struct Map {
   player_y: f32,
   gravity: f32,
   is_facing_right: bool,
+  offset_x: u32,
+  offset_y: u32,
 }
 
 #[wasm_bindgen]
@@ -31,6 +33,8 @@ impl Map {
       player_y: cell_size as f32 * 10.0,
       gravity: 0.0,
       is_facing_right: false,
+      offset_x: 0,
+      offset_y: 0,
     }
   }
 
@@ -38,7 +42,7 @@ impl Map {
     for i in 0..self.size {
       for j in 0..self.size {
         let idx = self.get_idx(i, j);
-        self.data[idx] = randomizer(i, j);
+        self.data[idx] = randomizer(i + self.offset_x, j + self.offset_y);
       }
     }
   }
@@ -127,6 +131,11 @@ impl Map {
       let idx = self.get_idx(x, y);
       self.data[idx - 1] = 1;
     }
+  }
+
+  pub fn update_offset(&mut self, x: u32, y: u32) {
+    self.offset_x = x;
+    self.offset_y = y;
   }
 
   fn is_top_colliding(&self) -> bool {
@@ -231,8 +240,8 @@ impl Map {
 
 fn randomizer(x: u32, y: u32) -> u8 {
   let seed: [u8; 32] = [
-    x as u8, y as u8, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
-    1, 2, 3, 4,
+    x as u8, y as u8, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, y as u8, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2,
+    3, 4, 1, 2, 3, 4,
   ];
   let mut rng: StdRng = SeedableRng::from_seed(seed);
   let random_val: u8 = rng.gen::<u8>();

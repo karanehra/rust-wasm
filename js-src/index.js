@@ -13,17 +13,17 @@ const glObject = setupWebGL();
 
 /////////// Render map ///////////
 let map = document.getElementById("map");
-let size = Math.floor(Math.max(map.width, map.height) / 20);
+let size = 30;
 let gameMap = Map.create(size, 10, CELL_SIZE);
 let startX = gameMap.get_player_x();
 let startY = gameMap.get_player_y();
-gameMap.populate();
 
 let mouseX, mouseY;
-let data = new Uint8Array(memory.buffer, gameMap.render(), size * size);
-data[0] = 0;
-console.log(data);
+
 const setupMap = () => {
+  gameMap.populate();
+  let data = new Uint8Array(memory.buffer, gameMap.render(), size * size);
+  data[0] = 0;
   for (let i = 0; i < size ** 2; i++) {
     let yCoordinate = Math.floor(i / size);
     let xCoordinate = i - yCoordinate * size;
@@ -60,13 +60,17 @@ if (main.width !== width || main.height !== height) {
 
 gameMap.set_gravity(GRAVITY);
 
+let translation = [];
+
 const render = () => {
   ctx.clearRect(0, 0, main.width, main.height);
   handleControls();
-  glObject.translation = [
+  translation = [
     -gameMap.get_player_x() + startX,
     -gameMap.get_player_y() + startY,
   ];
+  gameMap.update_offset(-translation[0], -translation[1]);
+  glObject.translation = translation;
   gameMap.update_player();
   player.update();
   setupMap();
