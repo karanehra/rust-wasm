@@ -1,3 +1,5 @@
+use rand::prelude::*;
+use rand::{Rng, SeedableRng};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -36,7 +38,7 @@ impl Map {
     for i in 0..self.size {
       for j in 0..self.size {
         let idx = self.get_idx(i, j);
-        self.data[idx] = randomizer();
+        self.data[idx] = randomizer(i, j);
       }
     }
   }
@@ -227,8 +229,13 @@ impl Map {
   }
 }
 
-fn randomizer() -> u8 {
-  let random_val: u8 = rand::random();
+fn randomizer(x: u32, y: u32) -> u8 {
+  let seed: [u8; 32] = [
+    x as u8, y as u8, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
+    1, 2, 3, 4,
+  ];
+  let mut rng: StdRng = SeedableRng::from_seed(seed);
+  let random_val: u8 = rng.gen::<u8>();
   if random_val > 200 {
     return 2;
   }

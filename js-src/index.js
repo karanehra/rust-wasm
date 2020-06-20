@@ -20,9 +20,9 @@ let startY = gameMap.get_player_y();
 gameMap.populate();
 
 let mouseX, mouseY;
-
 let data = new Uint8Array(memory.buffer, gameMap.render(), size * size);
 data[0] = 0;
+console.log(data);
 const setupMap = () => {
   for (let i = 0; i < size ** 2; i++) {
     let yCoordinate = Math.floor(i / size);

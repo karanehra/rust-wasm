@@ -1,5 +1,6 @@
 // use math::round::ceil;
 use rand::prelude::*;
+use rand::{Rng, SeedableRng};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -129,6 +130,11 @@ impl DiaSquare {
 }
 
 fn randomizer() -> u32 {
-  let a: u32 = random::<u32>() | 0xFF000000;
-  return a;
+  // let a: u32 = random::<u32>() | 0xFF000000;
+  // return a;
+  let seed: [u8; 32] = [
+    1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
+  ];
+  let mut rng: StdRng = SeedableRng::from_seed(seed);
+  return rng.gen::<u32>();
 }
