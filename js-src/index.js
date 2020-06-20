@@ -69,7 +69,10 @@ const render = () => {
     -gameMap.get_player_x() + startX,
     -gameMap.get_player_y() + startY,
   ];
-  gameMap.update_offset(-translation[0], -translation[1]);
+  gameMap.update_offset(
+    -Math.floor(Math.abs(translation[0]) / CELL_SIZE),
+    -Math.floor(Math.abs(translation[1]) / CELL_SIZE)
+  );
   glObject.translation = translation;
   gameMap.update_player();
   player.update();

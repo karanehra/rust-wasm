@@ -1,5 +1,6 @@
 use rand::prelude::*;
 use rand::{Rng, SeedableRng};
+use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -14,6 +15,7 @@ pub struct Map {
   is_facing_right: bool,
   offset_x: u32,
   offset_y: u32,
+  block_data: HashMap<usize, u8>,
 }
 
 #[wasm_bindgen]
@@ -35,6 +37,7 @@ impl Map {
       is_facing_right: false,
       offset_x: 0,
       offset_y: 0,
+      block_data: HashMap::new(),
     }
   }
 
@@ -42,7 +45,10 @@ impl Map {
     for i in 0..self.size {
       for j in 0..self.size {
         let idx = self.get_idx(i, j);
-        self.data[idx] = randomizer(i + self.offset_x, j + self.offset_y);
+        match self.block_data.get(&idx) {
+          Some(val) => self.data[idx] = *val,
+          None => self.data[idx] = randomizer(i + self.offset_x, j + self.offset_y),
+        }
       }
     }
   }
@@ -101,35 +107,33 @@ impl Map {
   }
 
   pub fn remove_block(&mut self) {
+    let x = (self.player_x / self.cell_size as f32) as u32;
+    let y = (self.player_y / self.cell_size as f32) as u32;
+    let idx = self.get_idx(x, y);
+
     if self.is_facing_right && self.is_right_colliding() {
-      let x = (self.player_x / self.cell_size as f32) as u32;
-      let y = (self.player_y / self.cell_size as f32) as u32;
-      let idx = self.get_idx(x, y);
       self.data[idx + 1] = 0;
+      self.block_data.insert((idx + 1) as usize, 0);
     }
 
     if !self.is_facing_right && self.is_left_colliding() {
-      let x = (self.player_x / self.cell_size as f32) as u32;
-      let y = (self.player_y / self.cell_size as f32) as u32;
-      self.set_data(x, y, 0);
-      let idx = self.get_idx(x, y);
       self.data[idx - 1] = 0;
+      self.block_data.insert((idx - 1) as usize, 0);
     }
   }
 
   pub fn add_block(&mut self) {
+    let x = (self.player_x / self.cell_size as f32) as u32;
+    let y = (self.player_y / self.cell_size as f32) as u32;
+    let idx = self.get_idx(x, y);
     if self.is_facing_right && !self.is_right_colliding() {
-      let x = (self.player_x / self.cell_size as f32) as u32;
-      let y = (self.player_y / self.cell_size as f32) as u32;
-      let idx = self.get_idx(x, y);
       self.data[idx + 1] = 1;
+      self.block_data.insert((idx + 1) as usize, 1);
     }
 
     if !self.is_facing_right && !self.is_left_colliding() {
-      let x = (self.player_x / self.cell_size as f32) as u32;
-      let y = (self.player_y / self.cell_size as f32) as u32;
-      let idx = self.get_idx(x, y);
       self.data[idx - 1] = 1;
+      self.block_data.insert((idx - 1) as usize, 1);
     }
   }
 
